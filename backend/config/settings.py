@@ -1,0 +1,10 @@
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+GOOGLE_API_KEY_INDEX = os.getenv("GOOGLE_API_KEY_INDEX")
+GOOGLE_API_KEY_CITY = os.getenv("GOOGLE_API_KEY_CITY")
+GOOGLE_API_KEY_MONUMENT = os.getenv("GOOGLE_API_KEY_MONUMENT")
+GOOGLE_GEMINI_API_KEY = os.getenv("GOOGLE_GEMINI_API_KEY")
+GOOGLE_ITENARY_API_KEY = os.getenv("GOOGLE_ITENARY_API_KEY")
