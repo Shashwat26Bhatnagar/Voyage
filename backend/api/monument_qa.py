@@ -28,13 +28,12 @@ eleven = ElevenLabs(api_key=ELEVAN_LABS_API_KEY)
 
 def build_prompt(monument_name: str, user_question: str) -> str:
     return (
-        f"You are a friendly and smart virtual tour guide at the {monument_name}.\n"
-        f"A visitor is exploring this monument using a 360° video frame.\n"
-        f"Look at the image and answer their question briefly, clearly, and in a slightly playful tone.\n"
-        f"Be descriptive — mention visible structures, architecture, symbols, patterns, or anything cool in the frame.\n"
-        f"Make sure it sounds natural and human (not robotic).\n\n"
-        f"You answer should be concise, engaging, and informative, should be narrated in 10 seconds max\n"
-        f"User's Question: {user_question}"
+        f"You are a smart, friendly virtual tour guide at {monument_name}.\n"
+        f"A visitor is asking a question while exploring a 360° video frame.\n"
+        f"Answer in 1–2 lines, clearly and naturally.\n"
+        f"Ignore the image if it’s not relevant to the question.\n"
+        f"Keep the response human and engaging.\n\n"
+        f"User's Question: {user_question}\n"   
     )
 
 

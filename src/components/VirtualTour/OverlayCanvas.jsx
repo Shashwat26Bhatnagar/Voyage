@@ -213,21 +213,11 @@ const fetchNarrationAudio = async (timestamp) => {
   }
 };
 
-
 const handleNarration = () => {
-  if (narrationStarted) {
-    setNarrationStarted(false);
-
-    if (narrationIntervalRef.current) {
-      clearInterval(narrationIntervalRef.current);
-      narrationIntervalRef.current = null;
-    }
-    if (narrationAudioRef.current) {
-      narrationAudioRef.current.pause();
-      narrationAudioRef.current = null;
-    }
-  } else {
+  if (!narrationStarted) {
+    // Start narration
     setNarrationStarted(true);
+    setIsNarrationPaused(false);
 
     fetchNarrationAudio(videoTime); // Send first narration
 
@@ -235,9 +225,28 @@ const handleNarration = () => {
       const currentTime = screenVideoRef.current?.currentTime || videoRef.current?.currentTime || 0;
       fetchNarrationAudio(Math.floor(currentTime));
     }, 5000); // Send every 5 seconds
+  } else if (isNarrationPaused) {
+    // Resume narration
+    setIsNarrationPaused(false);
+    
+    // Resume any paused audio
+    if (narrationAudioRef.current && narrationAudioRef.current.paused) {
+      narrationAudioRef.current.play().catch((err) => console.error("Audio resume error:", err));
+    } else {
+      // Fetch new audio if none is available
+      const currentTime = screenVideoRef.current?.currentTime || videoRef.current?.currentTime || 0;
+      fetchNarrationAudio(Math.floor(currentTime));
+    }
+  } else {
+    // Pause narration
+    setIsNarrationPaused(true);
+    
+    // Pause any currently playing audio
+    if (narrationAudioRef.current && !narrationAudioRef.current.paused) {
+      narrationAudioRef.current.pause();
+    }
   }
 };
-
 
 const pauseNarrationForAsk = (duration = 28000) => {
   setIsNarrationPaused(true);
@@ -330,6 +339,15 @@ const handleAsk = async () => {
   });
 };
 
+const getNarrationButtonText = () => {
+  if (!narrationStarted) {
+    return "🔊 Start Narration";
+  } else if (isNarrationPaused) {
+    return "▶️ Resume Narration";
+  } else {
+    return "⏸️ Pause Narration";
+  }
+};
 
   return (
     <div style={{ width: "100vw", height: "100vh", overflow: "hidden", position: "relative" }}>
@@ -371,7 +389,7 @@ const handleAsk = async () => {
             {screenStream ? "🛑 Stop Sharing" : "🖥️ Share Screen"}
           </button>
           <button onClick={handleNarration}>
-            {narrationStarted ? "🔇 Stop Narration" : "🔊 Start Narration"}
+            {getNarrationButtonText()}
           </button>
         </div>
 
