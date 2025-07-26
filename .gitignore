@@ -41,5 +41,9 @@ ENV/
 .ipynb_checkpoints/
 
 # --- Mac/Linux ---
-*.DS_Store
 .cache/
+
+# --- Large media files (to keep repo small) ---
+public/models/*.mp4
+backend/audios/
+backend/retrieved_audios/
