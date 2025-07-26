@@ -14,6 +14,9 @@ import VirtualTour from "./pages/VirtualTour";
 import NotFound from "./pages/NotFound";
 import GoogleMapsLoader from "@/components/App/GoogleMapsLoader";
 
+import OverlayCanvas from "@/components/VirtualTour/OverlayCanvas";
+
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -31,6 +34,7 @@ const App = () => (
           <Route path="/monuments" element={<Monuments />} />
           <Route path="/itinerary" element={<Itinerary />} />
           <Route path="/virtual-tour" element={<VirtualTour />} />
+          <Route path="/overlay" element={<OverlayCanvas />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

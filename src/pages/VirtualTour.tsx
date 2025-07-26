@@ -1,12 +1,12 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Camera, ArrowLeft, Play } from "lucide-react";
+import { Camera, Play } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import BackgroundPattern from "@/components/BackgroundPattern";
 import PageHeader from "@/components/PageHeader";
 import { toast } from "sonner";
+
 import hawaMahalImg from "@/assets/hawa-mahal.jpg";
 import tajMahalImg from "@/assets/taj-mahal.jpg";
 import redFortImg from "@/assets/red-fort.jpg";
@@ -28,37 +28,49 @@ const VirtualTour = () => {
   const monuments: TourMonument[] = [
     {
       id: 1,
-      name: "Hawa Mahal",
+      name: "hawa-mahal",
       city: "Jaipur",
       state: "Rajasthan",
-      description: "The Palace of Winds, a stunning example of Rajput architecture with its intricate latticework and 953 small windows.",
+      description:
+        "The Palace of Winds, a stunning example of Rajput architecture with its intricate latticework and 953 small windows.",
       imageUrl: hawaMahalImg,
-      tourDuration: "15 minutes"
+      tourDuration: "15 minutes",
     },
     {
       id: 2,
-      name: "Taj Mahal",
+      name: "taj-mahal",
       city: "Agra",
       state: "Uttar Pradesh",
-      description: "An ivory-white marble mausoleum, one of the Seven Wonders of the World and a UNESCO World Heritage Site.",
+      description:
+        "An ivory-white marble mausoleum, one of the Seven Wonders of the World and a UNESCO World Heritage Site.",
       imageUrl: tajMahalImg,
-      tourDuration: "20 minutes"
+      tourDuration: "20 minutes",
     },
     {
       id: 3,
-      name: "Red Fort",
+      name: "red-fort",
       city: "Delhi",
       state: "Delhi",
-      description: "A historic Mughal fort that served as the main residence of the Mughal emperors for nearly 200 years.",
+      description:
+        "A historic Mughal fort that served as the main residence of the Mughal emperors for nearly 200 years.",
       imageUrl: redFortImg,
-      tourDuration: "18 minutes"
-    }
+      tourDuration: "18 minutes",
+    },
   ];
+
+  // Map URL-safe name to readable name
+  const formatMonumentName = (slug: string) => {
+    if (slug === "hawa-mahal") return "Hawa Mahal";
+    if (slug === "taj-mahal") return "Taj Mahal";
+    if (slug === "red-fort") return "Red Fort";
+    return slug;
+  };
 
   const handleStartTour = (monument: TourMonument) => {
     setSelectedMonument(monument);
-    toast.success(`Starting virtual tour of ${monument.name}`);
-    console.log(`Starting tour for ${monument.name}`);
+    const readableName = formatMonumentName(monument.name);
+    toast.success(`Starting virtual tour of ${readableName}`);
+    navigate("/overlay", { state: { monument: readableName } });
   };
 
   return (
@@ -84,42 +96,42 @@ const VirtualTour = () => {
                 Choose a monument to start your AI-guided virtual experience
               </CardDescription>
             </CardHeader>
-            
+
             <CardContent className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {monuments.map((monument) => (
-                  <Card 
+                  <Card
                     key={monument.id}
                     className="cursor-pointer transition-all duration-300 hover:scale-105 bg-gray-800/30 border-green-500/20 hover:bg-gray-700/40"
                   >
                     <CardContent className="p-0">
                       <div className="h-48 bg-gray-700 rounded-t-lg overflow-hidden">
-                        <img 
-                          src={monument.imageUrl} 
+                        <img
+                          src={monument.imageUrl}
                           alt={monument.name}
                           className="w-full h-full object-cover"
                           loading="lazy"
                         />
                       </div>
-                      
+
                       <div className="p-4 space-y-3">
                         <h3 className="text-lg font-semibold text-white">
-                          {monument.name}
+                          {formatMonumentName(monument.name)}
                         </h3>
-                        
+
                         <p className="text-green-400 text-sm">
                           {monument.city}, {monument.state}
                         </p>
-                        
+
                         <p className="text-gray-300 text-sm leading-relaxed">
                           {monument.description}
                         </p>
-                        
+
                         <div className="flex items-center justify-between pt-2">
                           <span className="text-emerald-400 text-sm font-medium">
                             {monument.tourDuration}
                           </span>
-                          
+
                           <Button
                             onClick={() => handleStartTour(monument)}
                             size="sm"
@@ -134,16 +146,6 @@ const VirtualTour = () => {
                   </Card>
                 ))}
               </div>
-
-              {selectedMonument && (
-                <Card className="bg-green-500/10 border-green-400/30">
-                  <CardContent className="p-4">
-                    <p className="text-green-300 text-center">
-                      Virtual tour of <span className="font-semibold">{selectedMonument.name}</span> is starting...
-                    </p>
-                  </CardContent>
-                </Card>
-              )}
             </CardContent>
           </Card>
         </div>

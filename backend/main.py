@@ -6,6 +6,7 @@ import os
 
 from api.routes import router as api_router
 from api.google_api import router as key_router
+from api.quotient_api import router as quotient_router  # ✅ NEW
 
 app = FastAPI()
 
@@ -25,6 +26,7 @@ app.mount("/assets", StaticFiles(directory=os.path.join(frontend_path, "assets")
 # Routers
 app.include_router(api_router)
 app.include_router(key_router)
+app.include_router(quotient_router)  # ✅ NEW
 
 @app.get("/{full_path:path}")
 def serve_react_app(full_path: str):
