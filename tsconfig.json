@@ -1,19 +1,3 @@
-{
-  "files": [],
-  "references": [
-    { "path": "./tsconfig.app.json" },
-    { "path": "./tsconfig.node.json" }
-  ],
-  "compilerOptions": {
-    "baseUrl": ".",
-    "paths": {
-      "@/*": ["./src/*"]
-    },
-    "noImplicitAny": false,
-    "noUnusedParameters": false,
-    "skipLibCheck": true,
-    "allowJs": true,
-    "noUnusedLocals": false,
-    "strictNullChecks": false
-  }
-}
+version https://git-lfs.github.com/spec/v1
+oid sha256:1914430cf76f7e28628f4a14b7b09e256f5ac5263e816c63691b08cf083994a8
+size 381
