@@ -9,7 +9,6 @@ const Options = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-green-900 relative overflow-hidden">
-      {/* Animated background elements */}
       <div className="absolute inset-0">
         <div className="absolute top-1/4 left-1/4 w-72 h-72 bg-green-500/10 rounded-full blur-xl animate-pulse"></div>
         <div className="absolute top-3/4 right-1/4 w-96 h-96 bg-emerald-400/10 rounded-full blur-2xl animate-pulse delay-1000"></div>
@@ -17,7 +16,6 @@ const Options = () => {
       </div>
 
       <div className="relative z-10 container mx-auto px-4 py-8">
-        {/* Header with Back Button */}
         <div className="flex items-center mb-12">
           <Button
             onClick={() => navigate('/')}
@@ -43,7 +41,6 @@ const Options = () => {
 
         <div className="max-w-4xl mx-auto">
           <div className="grid md:grid-cols-2 gap-8">
-            {/* Plan Your Own Trip */}
             <Card className="group cursor-pointer transition-all duration-300 hover:scale-105 bg-black/40 backdrop-blur-md border border-green-500/20 hover:border-green-400/40">
               <CardContent className="p-8 text-center space-y-6">
                 <div className="w-16 h-16 mx-auto bg-green-500/20 rounded-full flex items-center justify-center group-hover:bg-green-500/30 transition-colors">
@@ -65,7 +62,6 @@ const Options = () => {
               </CardContent>
             </Card>
 
-            {/* Take a Virtual Tour */}
             <Card className="group cursor-pointer transition-all duration-300 hover:scale-105 bg-black/40 backdrop-blur-md border border-green-500/20 hover:border-green-400/40">
               <CardContent className="p-8 text-center space-y-6">
                 <div className="w-16 h-16 mx-auto bg-emerald-500/20 rounded-full flex items-center justify-center group-hover:bg-emerald-500/30 transition-colors">

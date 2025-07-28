@@ -56,13 +56,11 @@ export function Experience() {
       <ambientLight intensity={0.5} />
       <directionalLight position={[5, 5, 5]} intensity={1} />
 
-      {/* 360° Video Background */}
       <mesh>
         <sphereGeometry args={[50, 64, 64]} />
         <meshBasicMaterial map={videoTexture} side={THREE.BackSide} />
       </mesh>
 
-      {/* Avatar that follows the user */}
       <group ref={avatarRef} scale={1}>
         <Avatar />
       </group>

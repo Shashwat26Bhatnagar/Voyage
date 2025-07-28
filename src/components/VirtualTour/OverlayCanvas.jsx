@@ -3,7 +3,8 @@ import { Canvas, useThree, useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import { OrbitControls } from "@react-three/drei";
 import { Avatar } from "./Avatar";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import LoadingOverlay from "../LoadingOverlay";
 
 function getScriptChunk(time) {
   const chunks = ["0_15", "15_30", "30_45", "45_60"];
@@ -104,6 +105,7 @@ export default function OverlayApp() {
   const narrationIntervalRef = useRef(null);
   const askTimeoutRef = useRef(null);
   const location = useLocation();
+  const navigate = useNavigate();
   const selectedMonument = location.state?.monument || "hawa-mahal";
 
   const [currentScript, setCurrentScript] = useState("0_15");
@@ -114,6 +116,22 @@ export default function OverlayApp() {
   const [error, setError] = useState("");
   const [hasInteracted, setHasInteracted] = useState(false);
   const [isNarrationPaused, setIsNarrationPaused] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 2000);
+
+    return () => clearTimeout(timer);
+  }, []);
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 2000);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -127,7 +145,7 @@ export default function OverlayApp() {
       if (!isNarrationPaused) {
         fetchNarrationAudio(roundedTime);
       }
-    }, 15000); // Fetch every 5 seconds
+    }, 15000); // Fetch every 15 seconds
 
     return () => clearInterval(interval);
   }, [currentScript, isNarrationPaused, screenStream]);
@@ -330,16 +348,41 @@ export default function OverlayApp() {
 
   const getNarrationButtonText = () => {
     if (!narrationStarted) {
-      return "🔊 Start Narration";
+      return "🔊 Unmute";
     } else if (isNarrationPaused) {
-      return "▶️ Resume Narration";
+      return "🔊 Unmute";
     } else {
-      return "⏸️ Pause Narration";
+      return "🔇 Mute";
     }
   };
 
   return (
     <div style={{ width: "100vw", height: "100vh", overflow: "hidden", position: "relative" }}>
+      <LoadingOverlay isVisible={loading} message="Loading monument..." />
+
+      <button
+        onClick={() => navigate('/virtual-tour')}
+        style={{
+          position: "absolute",
+          top: 20,
+          left: 20,
+          zIndex: 15,
+          padding: "10px 15px",
+          borderRadius: "8px",
+          backgroundColor: "#000000",
+          color: "white",
+          border: "1px solid #555",
+          cursor: "pointer",
+          fontSize: "14px",
+          display: "flex",
+          alignItems: "center",
+          gap: "8px"
+        }}
+      >
+        ← Back
+      </button>
+
+
       <Canvas
         camera={{ position: [0, 1.6, 0], fov: 75 }}
         onPointerDown={() => setHasInteracted(true)}
@@ -371,17 +414,6 @@ export default function OverlayApp() {
         position: "absolute", bottom: 30, left: "50%", transform: "translateX(-50%)",
         background: "#000a", padding: 20, borderRadius: 12, color: "white", zIndex: 10
       }}>
-        {error && <p style={{ color: "red" }}>{error}</p>}
-
-        <div style={{ display: "flex", gap: 10, marginBottom: 10 }}>
-          <button onClick={screenStream ? stopScreenShare : startScreenShare}>
-            {screenStream ? "🛑 Stop Sharing" : "🖥️ Share Screen"}
-          </button>
-          <button onClick={handleNarration}>
-            {getNarrationButtonText()}
-          </button>
-        </div>
-
         <div style={{ display: "flex", gap: 10 }}>
           <input
             value={userQuery}
@@ -410,15 +442,6 @@ export default function OverlayApp() {
           >
             Ask
           </button>
-        </div>
-
-        <div style={{ fontSize: "12px", color: "#ccc", textAlign: "center", marginTop: 8 }}>
-          {screenStream ? "Screen Sharing" : "Video Background"} • Time: {videoTime}s
-          {narrationStarted && (
-            <span style={{ marginLeft: 10 }}>
-              • 🎙️ {isNarrationPaused ? "Paused" : "Narrating"}
-            </span>
-          )}
         </div>
       </div>
     </div>

@@ -1,8 +1,19 @@
-import ChromeDinoGame from "react-chrome-dino"
+import { useEffect, useRef } from "react";
+import ChromeDinoGame from "react-chrome-dino";
 
 const DinoWrapper = () => {
+    const gameContainerRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        return () => {
+            if (gameContainerRef.current) {
+                gameContainerRef.current.innerHTML = "";
+            }
+        };
+    }, []);
+
     return (
-        <div>
+        <div ref={gameContainerRef}>
             <div className="bg-black/70 px-6 py-4 rounded-xl shadow-lg text-center">
                 <h2 className="text-2xl font-bold text-white mb-2">
                     Building your personalised itinerary...
@@ -12,7 +23,6 @@ const DinoWrapper = () => {
             <div className="text-s text-gray-400 mt-2 text-center">
                 Tip: Use <span className="font-semibold">↑ Up Arrow</span> or <span className="font-semibold">Spacebar</span> to jump.
             </div>
-            
             <div className="scale-[1.5] origin-top">
                 <ChromeDinoGame />
             </div>

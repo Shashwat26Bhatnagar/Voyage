@@ -84,12 +84,18 @@ const Index = () => {
     setIsLoading(true);
     try {
       await new Promise(resolve => setTimeout(resolve, 1000));
+      await fetch("/api/reset-monuments", {
+        method: "POST",
+      });
+
       const tripData = { selectedState: state, duration: Number(tripDays), startDate };
 
       if (locationType === "state") {
         navigate("/cities", { state: tripData });
       } else {
-        navigate("/monuments", { state: { ...tripData, selectedCities: [state] } });
+        navigate("/monuments", {
+          state: { ...tripData, selectedCities: [state] },
+        });
       }
     } catch {
       toast.error("Something went wrong");
@@ -97,6 +103,7 @@ const Index = () => {
       setIsLoading(false);
     }
   };
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-green-900 relative overflow-hidden">
@@ -182,7 +189,7 @@ const Index = () => {
                       placeholder="Number of days"
                       value={tripDays}
                       onChange={(e) => setTripDays(e.target.value)}
-                    className="bg-gray-800/50 border border-transparent text-white placeholder:text-gray-400"
+                      className="bg-gray-800/50 border border-transparent text-white placeholder:text-gray-400"
                     />
 
                   </div>

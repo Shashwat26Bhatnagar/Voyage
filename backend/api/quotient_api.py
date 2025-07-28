@@ -8,24 +8,20 @@ import base64
 
 router = APIRouter()
 
-# 🎤 Image + question-based QA endpoint
 @router.post("/virtual-tour/ask")
 async def ask_virtual_tour(
     image: UploadFile = File(...),
     question: str = Form(...),
     monument: str = Form(...)
 ):
-    # Read image bytes
     image_bytes = await image.read()
 
-    # Call QA system
     result = await answer_query(
         image_bytes=image_bytes,
         user_question=question,
         monument_name=monument
     )
 
-    # Encode audio to base64
     audio_base64 = base64.b64encode(result["audio"]).decode("utf-8")
 
     return JSONResponse({
@@ -35,19 +31,15 @@ async def ask_virtual_tour(
     })
 
 
-# 🧠 JSON body model for narration
 class NarrateRequest(BaseModel):
     monument: str
     timestamp: int
     source: Optional[str] = "video"
 
 
-# 📢 Narration API using normalized name
 @router.post("/virtual-tour/narrate")
 async def narrate_virtual_tour(request: NarrateRequest):
-    print("Received monument:", request.monument)
 
-    # Manual normalization
     monument_map = {
         "hawa mahal": "hawa_mahal",
         "taj mahal": "taj_mahal",
@@ -57,14 +49,11 @@ async def narrate_virtual_tour(request: NarrateRequest):
     monument = monument_map.get(request.monument.strip().lower(), request.monument.strip().lower())
 
     try:
-        # Fetch audio clip id and audio bytes by timestamp and normalized monument
         clip_id, audio_bytes = await get_narration_audio(
             monument_name=monument,
             timestamp=request.timestamp
         )
-        print(f"Playing clip_id: {clip_id}")
 
-        # Encode audio to base64 for response
         audio_base64 = base64.b64encode(audio_bytes).decode("utf-8")
 
         return JSONResponse({

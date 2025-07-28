@@ -27,7 +27,6 @@ const TripSummaryCard = ({ tripData, cityOrder }: TripSummaryCardProps) => {
 
         <Button
           onClick={async () => {
-            await fetch("/api/reset-monuments", { method: "POST" });
             navigate("/planner");
           }}
           className="bg-green-800 hover:bg-green-700 text-green-100 hover:text-white border border-green-500"

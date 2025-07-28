@@ -34,7 +34,7 @@ const VirtualTour = () => {
       description:
         "The Palace of Winds, a stunning example of Rajput architecture with its intricate latticework and 953 small windows.",
       imageUrl: hawaMahalImg,
-      tourDuration: "15 minutes",
+      tourDuration: "7 minutes",
     },
     {
       id: 2,
@@ -44,7 +44,7 @@ const VirtualTour = () => {
       description:
         "An ivory-white marble mausoleum, one of the Seven Wonders of the World and a UNESCO World Heritage Site.",
       imageUrl: tajMahalImg,
-      tourDuration: "20 minutes",
+      tourDuration: "11 minutes",
     },
     {
       id: 3,
@@ -54,7 +54,7 @@ const VirtualTour = () => {
       description:
         "A historic Mughal fort that served as the main residence of the Mughal emperors for nearly 200 years.",
       imageUrl: redFortImg,
-      tourDuration: "18 minutes",
+      tourDuration: "6 minutes",
     },
   ];
 
