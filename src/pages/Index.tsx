@@ -122,7 +122,7 @@ const Index = () => {
                 <CardHeader className="text-center pb-6">
                   <CardTitle className="text-2xl text-white mb-2">Trip Details</CardTitle>
                   <CardDescription className="text-green-200/80">
-                    Tell us about your travel plans in India
+                    Tell us about your travel plans
                   </CardDescription>
                 </CardHeader>
 
@@ -182,8 +182,9 @@ const Index = () => {
                       placeholder="Number of days"
                       value={tripDays}
                       onChange={(e) => setTripDays(e.target.value)}
-                      className="bg-gray-800/50 border-green-500/30 text-white placeholder:text-gray-400 focus:border-green-400"
+                    className="bg-gray-800/50 border border-transparent text-white placeholder:text-gray-400"
                     />
+
                   </div>
 
                   <div className="space-y-3">

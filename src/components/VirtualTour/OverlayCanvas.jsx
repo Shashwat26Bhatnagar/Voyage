@@ -115,25 +115,24 @@ export default function OverlayApp() {
   const [hasInteracted, setHasInteracted] = useState(false);
   const [isNarrationPaused, setIsNarrationPaused] = useState(false);
 
-useEffect(() => {
-  const interval = setInterval(() => {
-    const currentTime = screenVideoRef.current?.currentTime || videoRef.current?.currentTime || 0;
-    const roundedTime = Math.floor(currentTime);
-    setVideoTime(roundedTime);
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const currentTime = screenVideoRef.current?.currentTime || videoRef.current?.currentTime || 0;
+      const roundedTime = Math.floor(currentTime);
+      setVideoTime(roundedTime);
 
-    const chunk = getScriptChunk(currentTime);
-    if (chunk !== currentScript) setCurrentScript(chunk);
+      const chunk = getScriptChunk(currentTime);
+      if (chunk !== currentScript) setCurrentScript(chunk);
 
-    if (!isNarrationPaused) {
-      fetchNarrationAudio(roundedTime); // Automatic fetch every 5s
-    }
-  }, 15000); // Fetch every 5 seconds
+      if (!isNarrationPaused) {
+        fetchNarrationAudio(roundedTime);
+      }
+    }, 15000); // Fetch every 5 seconds
 
-  return () => clearInterval(interval);
-}, [currentScript, isNarrationPaused, screenStream]);
+    return () => clearInterval(interval);
+  }, [currentScript, isNarrationPaused, screenStream]);
 
 
-  // Cleanup on unmount
   useEffect(() => {
     return () => {
       if (narrationIntervalRef.current) {
@@ -166,188 +165,178 @@ useEffect(() => {
     setScreenStream(null);
   };
 
-const fetchNarrationAudio = async (timestamp) => {
-  try {
-    const response = await fetch("http://localhost:8000/virtual-tour/narrate", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        monument: selectedMonument,
-        timestamp: timestamp,
-        source: screenStream ? "screen" : "video", // Pass source field for backend routing
-      }),
-    });
-
-    const data = await response.json();
-
-    if (data.audio_base64) {
-      if (narrationAudioRef.current) {
-        narrationAudioRef.current.pause();
-        narrationAudioRef.current = null;
-      }
-
-      const audioBlob = new Blob(
-        [Uint8Array.from(atob(data.audio_base64), c => c.charCodeAt(0))],
-        { type: "audio/mpeg" }
-      );
-
-      const audioUrl = URL.createObjectURL(audioBlob);
-      const audio = new Audio(audioUrl);
-
-      narrationAudioRef.current = audio;
-
-      if (!isNarrationPaused) {
-        audio.play().catch((err) => console.error("Audio play error:", err));
-      }
-
-      audio.onended = () => {
-        URL.revokeObjectURL(audioUrl);
-      };
-    } else {
-      console.warn("No audio received from backend for:", selectedMonument, "@", timestamp);
-    }
-  } catch (err) {
-    console.error("Narration fetch error:", err);
-  }
-};
-
-const handleNarration = () => {
-  if (!narrationStarted) {
-    // Start narration
-    setNarrationStarted(true);
-    setIsNarrationPaused(false);
-
-    fetchNarrationAudio(videoTime); // Send first narration
-
-    narrationIntervalRef.current = setInterval(() => {
-      const currentTime = screenVideoRef.current?.currentTime || videoRef.current?.currentTime || 0;
-      fetchNarrationAudio(Math.floor(currentTime));
-    }, 5000); // Send every 5 seconds
-  } else if (isNarrationPaused) {
-    // Resume narration
-    setIsNarrationPaused(false);
-    
-    // Resume any paused audio
-    if (narrationAudioRef.current && narrationAudioRef.current.paused) {
-      narrationAudioRef.current.play().catch((err) => console.error("Audio resume error:", err));
-    } else {
-      // Fetch new audio if none is available
-      const currentTime = screenVideoRef.current?.currentTime || videoRef.current?.currentTime || 0;
-      fetchNarrationAudio(Math.floor(currentTime));
-    }
-  } else {
-    // Pause narration
-    setIsNarrationPaused(true);
-    
-    // Pause any currently playing audio
-    if (narrationAudioRef.current && !narrationAudioRef.current.paused) {
-      narrationAudioRef.current.pause();
-    }
-  }
-};
-
-const pauseNarrationForAsk = (duration = 28000) => {
-  setIsNarrationPaused(true);
-
-  // Stop narration audio if it's currently playing
-  if (narrationAudioRef.current) {
-    narrationAudioRef.current.pause();
-    narrationAudioRef.current = null;
-  }
-
-  // Clear any previous pause timers
-  if (askTimeoutRef.current) {
-    clearTimeout(askTimeoutRef.current);
-  }
-
-  // Resume narration after `duration` (17 seconds default)
-  askTimeoutRef.current = setTimeout(() => {
-    setIsNarrationPaused(false);
-
-    // Resume narration only if narration is still active
-    if (narrationStarted) {
-      const currentTime = screenVideoRef.current?.currentTime || videoRef.current?.currentTime || 0;
-      fetchNarrationAudio(Math.floor(currentTime));
-    }
-  }, duration);
-};
-
-const handleAsk = async () => {
-  if (!videoRef.current && !screenVideoRef.current) return;
-
-  // Stop and pause narration for 17 seconds when asking
-  pauseNarrationForAsk(17000);
-
-  const video = screenVideoRef.current || videoRef.current;
-  video.pause();
-
-  const canvas = document.createElement("canvas");
-  canvas.width = video.videoWidth;
-  canvas.height = video.videoHeight;
-
-  const ctx = canvas.getContext("2d");
-  ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-  canvas.toBlob(async (blob) => {
-    if (!blob) return;
-
-    const formData = new FormData();
-    formData.append("monument", selectedMonument);
-    formData.append("question", userQuery);
-    formData.append("image", blob, "screenshot.png");
-
+  const fetchNarrationAudio = async (timestamp) => {
     try {
-      const response = await fetch("http://localhost:8000/virtual-tour/ask", {
+      const response = await fetch("http://localhost:8000/virtual-tour/narrate", {
         method: "POST",
-        body: formData,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          monument: selectedMonument,
+          timestamp: timestamp,
+          source: screenStream ? "screen" : "video",
+        }),
       });
 
       const data = await response.json();
 
-      const base64Audio = data.audio_base64;
-      if (base64Audio) {
-        // Stop any narration audio *before* playing Ask audio
+      if (data.audio_base64) {
         if (narrationAudioRef.current) {
           narrationAudioRef.current.pause();
           narrationAudioRef.current = null;
         }
 
         const audioBlob = new Blob(
-          [Uint8Array.from(atob(base64Audio), c => c.charCodeAt(0))],
-          { type: 'audio/mpeg' }
+          [Uint8Array.from(atob(data.audio_base64), c => c.charCodeAt(0))],
+          { type: "audio/mpeg" }
         );
+
         const audioUrl = URL.createObjectURL(audioBlob);
         const audio = new Audio(audioUrl);
 
-        audio.play().catch(err => console.error("Ask audio play error:", err));
+        narrationAudioRef.current = audio;
+
+        if (!isNarrationPaused) {
+          audio.play().catch((err) => console.error("Audio play error:", err));
+        }
 
         audio.onended = () => {
           URL.revokeObjectURL(audioUrl);
         };
       } else {
-        console.error("No audio received from backend for user question");
+        console.warn("No audio received from backend for:", selectedMonument, "@", timestamp);
       }
-
     } catch (err) {
-      console.error("Ask error:", err);
-    } finally {
-      setUserQuery("");
-      video.play();
+      console.error("Narration fetch error:", err);
     }
-  });
-};
+  };
 
-const getNarrationButtonText = () => {
-  if (!narrationStarted) {
-    return "🔊 Start Narration";
-  } else if (isNarrationPaused) {
-    return "▶️ Resume Narration";
-  } else {
-    return "⏸️ Pause Narration";
-  }
-};
+  const handleNarration = () => {
+    if (!narrationStarted) {
+      setNarrationStarted(true);
+      setIsNarrationPaused(false);
+
+      fetchNarrationAudio(videoTime);
+
+      narrationIntervalRef.current = setInterval(() => {
+        const currentTime = screenVideoRef.current?.currentTime || videoRef.current?.currentTime || 0;
+        fetchNarrationAudio(Math.floor(currentTime));
+      }, 5000); // Send every 5 seconds
+    } else if (isNarrationPaused) {
+      setIsNarrationPaused(false);
+
+      if (narrationAudioRef.current && narrationAudioRef.current.paused) {
+        narrationAudioRef.current.play().catch((err) => console.error("Audio resume error:", err));
+      } else {
+        const currentTime = screenVideoRef.current?.currentTime || videoRef.current?.currentTime || 0;
+        fetchNarrationAudio(Math.floor(currentTime));
+      }
+    } else {
+      setIsNarrationPaused(true);
+
+      if (narrationAudioRef.current && !narrationAudioRef.current.paused) {
+        narrationAudioRef.current.pause();
+      }
+    }
+  };
+
+  const pauseNarrationForAsk = (duration = 28000) => {
+    setIsNarrationPaused(true);
+
+    if (narrationAudioRef.current) {
+      narrationAudioRef.current.pause();
+      narrationAudioRef.current = null;
+    }
+
+    if (askTimeoutRef.current) {
+      clearTimeout(askTimeoutRef.current);
+    }
+
+    // Resume narration after `duration` (17 seconds default)
+    askTimeoutRef.current = setTimeout(() => {
+      setIsNarrationPaused(false);
+
+      if (narrationStarted) {
+        const currentTime = screenVideoRef.current?.currentTime || videoRef.current?.currentTime || 0;
+        fetchNarrationAudio(Math.floor(currentTime));
+      }
+    }, duration);
+  };
+
+  const handleAsk = async () => {
+    if (!videoRef.current && !screenVideoRef.current) return;
+
+    // Stop and pause narration for 17 seconds when asking
+    pauseNarrationForAsk(17000);
+
+    const video = screenVideoRef.current || videoRef.current;
+    video.pause();
+
+    const canvas = document.createElement("canvas");
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+
+    const ctx = canvas.getContext("2d");
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+    canvas.toBlob(async (blob) => {
+      if (!blob) return;
+
+      const formData = new FormData();
+      formData.append("monument", selectedMonument);
+      formData.append("question", userQuery);
+      formData.append("image", blob, "screenshot.png");
+
+      try {
+        const response = await fetch("http://localhost:8000/virtual-tour/ask", {
+          method: "POST",
+          body: formData,
+        });
+
+        const data = await response.json();
+
+        const base64Audio = data.audio_base64;
+        if (base64Audio) {
+          if (narrationAudioRef.current) {
+            narrationAudioRef.current.pause();
+            narrationAudioRef.current = null;
+          }
+
+          const audioBlob = new Blob(
+            [Uint8Array.from(atob(base64Audio), c => c.charCodeAt(0))],
+            { type: 'audio/mpeg' }
+          );
+          const audioUrl = URL.createObjectURL(audioBlob);
+          const audio = new Audio(audioUrl);
+
+          audio.play().catch(err => console.error("Ask audio play error:", err));
+
+          audio.onended = () => {
+            URL.revokeObjectURL(audioUrl);
+          };
+        } else {
+          console.error("No audio received from backend for user question");
+        }
+
+      } catch (err) {
+        console.error("Ask error:", err);
+      } finally {
+        setUserQuery("");
+        video.play();
+      }
+    });
+  };
+
+  const getNarrationButtonText = () => {
+    if (!narrationStarted) {
+      return "🔊 Start Narration";
+    } else if (isNarrationPaused) {
+      return "▶️ Resume Narration";
+    } else {
+      return "⏸️ Pause Narration";
+    }
+  };
 
   return (
     <div style={{ width: "100vw", height: "100vh", overflow: "hidden", position: "relative" }}>

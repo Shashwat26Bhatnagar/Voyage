@@ -1,5 +1,3 @@
-// src/utils/getScriptChunk.js
-
 export const getScriptChunk = (time) => {
   if (time < 15) return "0_15";
   if (time < 40) return "15_40";

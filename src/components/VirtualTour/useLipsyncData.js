@@ -1,4 +1,3 @@
-// src/useLipsyncData.js
 import { useEffect, useState } from "react";
 
 export function useLipsyncData(scriptChunk) {
@@ -13,7 +12,6 @@ export function useLipsyncData(scriptChunk) {
         if (!response.ok) throw new Error("Lip sync JSON not found");
         const data = await response.json();
 
-        // Rhubarb-style JSON parsing
         const parsed = data.mouthCues.map((cue) => ({
           start: cue.start,
           end: cue.end,

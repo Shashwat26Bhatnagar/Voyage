@@ -18,7 +18,7 @@ import google.generativeai as genai
 
 from config.settings import GOOGLE_API_KEY_CITY, GOOGLE_API_KEY_MONUMENT, GOOGLE_GEMINI_API_KEY, GOOGLE_ITENARY_API_KEY
 
-from api.dedup import is_duplicate
+from api.dedup import is_duplicate, clear_duplicates
 
 router = APIRouter()
 
@@ -130,6 +130,13 @@ def get_full_day_activities(cities: list[str] = Query(...)):
             id_counter += 1
 
     return {"activities": activities}
+
+
+@router.post("/api/reset-monuments")
+def reset_monument_cache():
+    clear_duplicates()
+    return {"status": "cleared"}
+
 
 
 @router.get("/api/cities")

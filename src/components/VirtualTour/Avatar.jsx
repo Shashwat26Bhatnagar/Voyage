@@ -4,7 +4,6 @@ import { useFBX, useGLTF, useAnimations } from "@react-three/drei";
 import { SkeletonUtils } from "three-stdlib";
 import { useLipsyncData } from "./useLipsyncData";
 
-// Convert Rhubarb viseme to morphTarget name
 const getMorphTargetFromViseme = (v) => {
   const map = {
     A: "viseme_aa",
@@ -27,7 +26,6 @@ export function Avatar({ videoRef, currentScript }) {
   const { nodes, materials } = useGraph(clonedScene);
   const group = useRef();
 
-  // Idle animation
   animations[0].name = "Idle";
   const { actions } = useAnimations(animations, group);
   useEffect(() => {
@@ -39,7 +37,6 @@ export function Avatar({ videoRef, currentScript }) {
     };
   }, [actions]);
 
-  // Static smile
   useEffect(() => {
     const smileAmount = 0.6;
     const head = nodes.Wolf3D_Head;
@@ -52,10 +49,8 @@ export function Avatar({ videoRef, currentScript }) {
     if (teethSmileIndex !== undefined) teeth.morphTargetInfluences[teethSmileIndex] = smileAmount;
   }, [nodes]);
 
-  // 🔄 Load mouth cues
   const mouthCues = useLipsyncData(currentScript);
 
-  // 🎥 Lipsync animation
   useFrame(() => {
     if (!videoRef?.current || !mouthCues.length) return;
     const time = videoRef.current.currentTime;
@@ -73,7 +68,6 @@ export function Avatar({ videoRef, currentScript }) {
     if (idx !== undefined) head.morphTargetInfluences[idx] = 1;
   });
 
-  // 🔊 Audio synced with video
   const audio = useMemo(() => {
     const el = new Audio(`/audios/${currentScript}.ogg`);
     el.preload = "auto";

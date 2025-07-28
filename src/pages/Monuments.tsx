@@ -32,6 +32,8 @@ const Monuments = () => {
     };
   }>({});
 
+  const [selectionChanged, setSelectionChanged] = useState(false);
+
   const [interCityMap, setInterCityMap] = useState<number[]>([]);
   const [cityDayCount, setCityDayCount] = useState<number[]>([]);
 
@@ -111,8 +113,12 @@ const Monuments = () => {
             [monument.type === "full-day" ? "fullDay" : "monuments"]: updatedList,
           },
         };
+      });
+
+      if (showSummary) {
+        setSelectionChanged(true);
       }
-      );
+
       toast.success(`${isSelected ? "Removed" : "Added"} ${monument.name}`);
       return updated;
     });
@@ -189,11 +195,11 @@ const Monuments = () => {
       cityDayCount[lastIndex] += days;
     }
 
-
     setDaysUsed(n);
     const tripDays = typeof tripData.duration === 'string' ? parseInt(tripData.duration) : tripData.duration;
     setDayExceeded(n > tripDays);
     setShowSummary(true);
+    setSelectionChanged(false);
     setInterCityMap(interCityMap);
     setCityDayCount(cityDayCount);
   };
@@ -202,6 +208,8 @@ const Monuments = () => {
     setConfirmUpdate(true);
     toast.success("Trip duration updated to match days required.");
   };
+
+  const isGenerateDisabled = !showSummary || selectionChanged || (dayExceeded && !confirmUpdate);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-green-900 relative overflow-hidden">
@@ -278,7 +286,7 @@ const Monuments = () => {
                 </Button>
                 <Button
                   onClick={handleGenerateItinerary}
-                  disabled={!showSummary || (dayExceeded && !confirmUpdate)}
+                  disabled={isGenerateDisabled}
                   className="flex-1 py-3 text-lg font-semibold bg-emerald-600 hover:bg-emerald-700 text-white rounded-md disabled:opacity-50"
                 >
                   Generate Itinerary
@@ -290,6 +298,11 @@ const Monuments = () => {
                   <p className="text-white text-lg">
                     Days required based on your selection: <span className="font-bold text-green-400">{daysUsed}</span>
                   </p>
+                  {selectionChanged && (
+                    <p className="text-yellow-400 mt-2">
+                      You've made changes to your selection. Please click "Done Selecting" again to update the itinerary.
+                    </p>
+                  )}
                   {dayExceeded && !confirmUpdate && (
                     <div className="mt-2">
                       <p className="text-red-400">

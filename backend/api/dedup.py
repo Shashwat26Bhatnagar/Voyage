@@ -11,3 +11,8 @@ def is_duplicate(place_id: str) -> bool:
 def reset_seen_ids():
     """Reset the seen IDs — useful for testing or refresh logic."""
     _seen_place_ids.clear()
+
+
+def clear_duplicates():
+    """Clear the memory of seen monuments"""
+    _seen_place_ids.clear()

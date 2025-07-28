@@ -58,7 +58,6 @@ const VirtualTour = () => {
     },
   ];
 
-  // Map URL-safe name to readable name
   const formatMonumentName = (slug: string) => {
     if (slug === "hawa-mahal") return "Hawa Mahal";
     if (slug === "taj-mahal") return "Taj Mahal";

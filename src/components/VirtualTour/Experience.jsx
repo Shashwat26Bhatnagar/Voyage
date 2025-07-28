@@ -35,16 +35,14 @@ export function Experience() {
 
   useFrame(() => {
     if (avatarRef.current) {
-      // Adjust position to lower-right of user's current view
       const offset = new THREE.Vector3(1.5, -1.2, -2.5);
       offset.applyQuaternion(camera.quaternion);
       offset.add(camera.position);
       avatarRef.current.position.copy(offset);
 
-      // Rotate to match camera but face slightly inward
       const targetQuat = new THREE.Quaternion().copy(camera.quaternion);
       const extraRotation = new THREE.Quaternion();
-      extraRotation.setFromAxisAngle(new THREE.Vector3(0, 1, 0), THREE.MathUtils.degToRad(15)); // slight left
+      extraRotation.setFromAxisAngle(new THREE.Vector3(0, 1, 0), THREE.MathUtils.degToRad(15));
       targetQuat.multiply(extraRotation);
       avatarRef.current.quaternion.copy(targetQuat);
     }

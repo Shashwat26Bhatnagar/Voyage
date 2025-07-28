@@ -5,7 +5,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useNavigate, useLocation } from "react-router-dom";
 import PageHeader from "@/components/PageHeader";
 import BackgroundPattern from "@/components/BackgroundPattern";
-import LoadingOverlay from "@/components/LoadingOverlay";
 import TouristRoutePlanner from "@/components/Itenary/TouristRoutePlanner";
 import { TripData } from "@/types/travel";
 import DinoWrapper from "@/components/Itenary/DinoWrapper";
@@ -23,7 +22,6 @@ const Itinerary = () => {
   const tripData: TripData = location.state || {};
 
   const [activeDay, setActiveDay] = useState(1);
-  const [rawItinerary, setRawItinerary] = useState<any[]>([]);
   const [dayRoutes, setDayRoutes] = useState<any[]>([]);
   const [geminiPlans, setGeminiPlans] = useState<GeminiDayPlan[]>([]);
   const [updatedCityWiseSelection, setUpdatedCityWiseSelection] = useState<any | null>(null);
@@ -32,6 +30,10 @@ const Itinerary = () => {
   const displayLocation = tripData.selectedCities?.length
     ? tripData.selectedCities.join(", ")
     : tripData.selectedState;
+
+  const cleanGeminiText = (text: string) => {
+    return text.replace(/\*\*/g, '');
+  };
 
   useEffect(() => {
     async function detect() {
@@ -108,9 +110,6 @@ const Itinerary = () => {
           }
         }
       }
-
-      setRawItinerary(raw);
-
       try {
         const r = await fetch("/api/generate-day-route", {
           method: "POST",
@@ -153,8 +152,16 @@ const Itinerary = () => {
           title="Your"
           highlightText="Itinerary"
           subtitle={`${tripData.duration}-Day Tourist Route for ${displayLocation}`}
-          backPath="/monuments"
         />
+
+        <div className="mb-6">
+          <Button
+            onClick={() => navigate('/')}
+            className="bg-green-700 hover:bg-green-800 text-white px-6 py-2 rounded-md"
+          >
+            Return to Home
+          </Button>
+        </div>
 
         <Card className="shadow-2xl border-0 bg-black/40 backdrop-blur-md border border-green-500/20">
           <CardContent className="p-6">
@@ -196,19 +203,24 @@ const Itinerary = () => {
               <Card className="shadow-2xl border-0 bg-black/40 backdrop-blur-md border border-green-500/20">
                 <CardHeader>
                   <CardTitle className="text-xl text-white">
-                    Day {activeDay} – {currentPlan.city}
+                    Day {activeDay} – {currentPlan.city}
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="text-white text-base leading-relaxed space-y-2">
-                  {currentPlan.plan
-                    .split(/(?:\.|\n)+\s*/)
+                  {cleanGeminiText(currentPlan.plan)
+                    .split(/\.(?=\s+[A-Z]|\s*$)/)
                     .filter((s) => s.trim())
-                    .map((pt, idx) => (
-                      <div key={idx} className="flex items-start gap-2">
-                        <span className="mt-1 text-red-400">•</span>
-                        <span>{pt.trim().replace(/^\s*Start your day at/, 'Start your day at')}</span>
-                      </div>
-                    ))}
+                    .map((pt, idx) => {
+                      const cleanedText = pt.trim().replace(/^\s*Start your day at/, 'Start your day at');
+                      const finalText = cleanedText.match(/[.!?]$/) ? cleanedText : cleanedText + '.';
+
+                      return (
+                        <div key={idx} className="flex items-start gap-2">
+                          <span className="mt-1 text-red-400">•</span>
+                          <span>{finalText}</span>
+                        </div>
+                      );
+                    })}
                 </CardContent>
               </Card>
             )}
