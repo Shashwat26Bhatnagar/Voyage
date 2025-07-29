@@ -1,5 +1,4 @@
-# VirtuVoyage  
-**Tagline: Smart trips. Seamless days.**
+# VirtuVoyage: Smart trips. Seamless days.  
 
 📌 *Submission for the Google Maps Platform Hackathon on Devpost.*
 
@@ -55,7 +54,7 @@ pip install -r requirements.txt
 
 ---
 
-## 🏃 Run Project
+## Run Project
 
 ### Start Backend Server
 
