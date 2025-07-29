@@ -197,7 +197,7 @@ const Monuments = () => {
 
     setDaysUsed(n);
     const tripDays = typeof tripData.duration === 'string' ? parseInt(tripData.duration) : tripData.duration;
-    setDayExceeded(n > tripDays);
+    setDayExceeded(n > tripDays || n < tripDays);
     setShowSummary(true);
     setSelectionChanged(false);
     setInterCityMap(interCityMap);
