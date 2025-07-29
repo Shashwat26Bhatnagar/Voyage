@@ -1,6 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { Sparkles } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import logo from "@/assets/VirtuVoyageLogo.jpeg";
+
 
 const Welcome = () => {
   const navigate = useNavigate();
@@ -19,7 +21,7 @@ const Welcome = () => {
 
           <div className="flex justify-center mb-8">
             <img
-              src="/src/assets/VirtuVoyageLogo.jpeg"
+              src={logo}
               alt="VirtuVoyage Logo"
               className="w-32 h-32 md:w-40 md:h-40 object-contain"
             />

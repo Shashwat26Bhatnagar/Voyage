@@ -20,14 +20,18 @@ const getMorphTargetFromViseme = (v) => {
 };
 
 export function Avatar({ videoRef, currentScript }) {
-  const { scene } = useGLTF("/models/685d7a165ed79261d6e44ff6.glb");
-  const { animations } = useFBX("/animations/Idle (1).fbx");
+  const { scene } = useGLTF('http://localhost:8000/models/685d7a165ed79261d6e44ff6.glb');
+  const filename = 'Idle (1).fbx';
+  const url = `http://localhost:8000/animations/${encodeURIComponent(filename)}`;
+  const { animations } = useFBX(url);
+
   const clonedScene = useMemo(() => SkeletonUtils.clone(scene), [scene]);
   const { nodes, materials } = useGraph(clonedScene);
   const group = useRef();
 
   animations[0].name = "Idle";
   const { actions } = useAnimations(animations, group);
+
   useEffect(() => {
     if (actions["Idle"]) {
       actions["Idle"].reset().fadeIn(0.5).play();
@@ -119,4 +123,4 @@ export function Avatar({ videoRef, currentScript }) {
   );
 }
 
-useGLTF.preload("/models/685d7a165ed79261d6e44ff6.glb");
+useGLTF.preload('http://localhost:8000/models/685d7a165ed79261d6e44ff6.glb');

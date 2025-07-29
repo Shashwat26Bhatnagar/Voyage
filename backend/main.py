@@ -6,10 +6,11 @@ import os
 
 from api.routes import router as api_router
 from api.google_api import router as key_router
-from api.quotient_api import router as quotient_router  # ✅
+from api.quotient_api import router as quotient_router
 
 app = FastAPI()
 
+# CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -19,14 +20,34 @@ app.add_middleware(
 )
 
 frontend_path = os.path.join(os.path.dirname(__file__), "..", "dist")
-app.mount("/assets", StaticFiles(directory=os.path.join(frontend_path, "assets")), name="assets")
 
-# Mount all routers
+# Mount folders
+app.mount(
+    "/models",
+    StaticFiles(directory=os.path.join(frontend_path, "models")),
+    name="models",
+)
+
+app.mount(
+    "/assets",
+    StaticFiles(directory=os.path.join(frontend_path, "assets")),
+    name="assets",
+)
+
+app.mount(
+    "/animations",
+    StaticFiles(directory=os.path.join(frontend_path, "animations")),
+    name="animations",
+)
+
+print("Models directory path:", os.path.join(frontend_path, "models"))
+print("Animations directory path:", os.path.join(frontend_path, "animations"))
+
+# Routers
 app.include_router(api_router)
 app.include_router(key_router)
 app.include_router(quotient_router)
 
-# React fallback route
 @app.get("/{full_path:path}")
 def serve_react_app(full_path: str):
     return FileResponse(os.path.join(frontend_path, "index.html"))
