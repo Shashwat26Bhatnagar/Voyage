@@ -52,6 +52,7 @@ async def answer_query(image_bytes: bytes, user_question: str, monument_name: st
             raise RuntimeError("Invalid or corrupted image file.") from img_err
 
         prompt = build_prompt(monument_name, user_question)
+        print("Prompt being sent to Gemini:\n", prompt)
 
         try:
             response = model.generate_content([prompt, img], stream=False)
@@ -70,12 +71,10 @@ async def answer_query(image_bytes: bytes, user_question: str, monument_name: st
             "audio": audio_bytes,
         }
 
-    except Exception:
-        traceback.print_exc()
-        return {
-            "answer": "Oops! Something went wrong while generating the answer.",
-            "audio": None,
-        }
+    finally:
+        # Clean up the temporary file
+        if os.path.exists(tmp_path):
+            os.remove(tmp_path)
 
 
 def text_to_speech_elevenlabs(text: str) -> bytes:

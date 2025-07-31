@@ -285,6 +285,7 @@ export default function OverlayApp() {
   const handleAsk = async () => {
     if (!videoRef.current && !screenVideoRef.current) return;
 
+    // Stop and pause narration for 17 seconds when asking
     pauseNarrationForAsk(17000);
 
     const video = screenVideoRef.current || videoRef.current;
@@ -293,6 +294,7 @@ export default function OverlayApp() {
     const canvas = document.createElement("canvas");
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
+
     const ctx = canvas.getContext("2d");
     ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
@@ -307,35 +309,43 @@ export default function OverlayApp() {
       try {
         const response = await fetch("https://virtuvoyage.onrender.com/virtual-tour/ask", {
           method: "POST",
-          mode: 'cors',
           body: formData,
         });
 
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
         const data = await response.json();
 
-        // Just console log the text answer instead of playing audio
-        if (data.answer) {
-          console.log("Answer:", data.answer);
-        } else if (data.text) {
-          console.log("Answer:", data.text);
+        const base64Audio = data.audio_base64;
+        if (base64Audio) {
+          if (narrationAudioRef.current) {
+            narrationAudioRef.current.pause();
+            narrationAudioRef.current = null;
+          }
+
+          const audioBlob = new Blob(
+            [Uint8Array.from(atob(base64Audio), c => c.charCodeAt(0))],
+            { type: 'audio/mpeg' }
+          );
+          const audioUrl = URL.createObjectURL(audioBlob);
+          const audio = new Audio(audioUrl);
+
+          audio.play().catch(err => console.error("Ask audio play error:", err));
+
+          audio.onended = () => {
+            URL.revokeObjectURL(audioUrl);
+          };
         } else {
-          console.log("Full response:", data);
+          console.error("No audio received from backend for user question");
         }
 
       } catch (err) {
         console.error("Ask error:", err);
-        setError(`Failed to get response: ${err.message}`);
-        alert("Sorry, couldn't process your question. Please try again.");
       } finally {
         setUserQuery("");
         video.play();
       }
     });
   };
+
   const getNarrationButtonText = () => {
     if (!narrationStarted) {
       return "🔊 Unmute";
