@@ -1,7 +1,7 @@
 
 import { Monument, City, DayItinerary } from "@/types/travel";
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://virtuvoyage.onrender.com/';
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://virtuvoyagee.onrender.com/';
 
 export const apiService = {
   async searchLocations(query: string) {

@@ -185,7 +185,7 @@ export default function OverlayApp() {
 
   const fetchNarrationAudio = async (timestamp) => {
     try {
-      const response = await fetch("https://virtuvoyage.onrender.com/virtual-tour/narrate", {
+      const response = await fetch("https://virtuvoyagee.onrender.com/virtual-tour/narrate", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -307,7 +307,7 @@ export default function OverlayApp() {
       formData.append("image", blob, "screenshot.png");
 
       try {
-        const response = await fetch("https://virtuvoyage.onrender.com/virtual-tour/ask", {
+        const response = await fetch("https://virtuvoyagee.onrender.com/virtual-tour/ask", {
           method: "POST",
           body: formData,
         });

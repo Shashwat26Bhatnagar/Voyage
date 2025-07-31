@@ -20,9 +20,9 @@ const getMorphTargetFromViseme = (v) => {
 };
 
 export function Avatar({ videoRef, currentScript }) {
-  const { scene } = useGLTF('https://virtuvoyage.onrender.com/models/685d7a165ed79261d6e44ff6.glb');
+  const { scene } = useGLTF('https://virtuvoyagee.onrender.com/models/685d7a165ed79261d6e44ff6.glb');
   const filename = 'Idle (1).fbx';
-  const url = `https://virtuvoyage.onrender.com/animations/${encodeURIComponent(filename)}`;
+  const url = `https://virtuvoyagee.onrender.com/animations/${encodeURIComponent(filename)}`;
   const { animations } = useFBX(url);
 
   const clonedScene = useMemo(() => SkeletonUtils.clone(scene), [scene]);
@@ -123,4 +123,4 @@ export function Avatar({ videoRef, currentScript }) {
   );
 }
 
-useGLTF.preload('https://virtuvoyage.onrender.com/models/685d7a165ed79261d6e44ff6.glb');
+useGLTF.preload('https://virtuvoyagee.onrender.com/models/685d7a165ed79261d6e44ff6.glb');

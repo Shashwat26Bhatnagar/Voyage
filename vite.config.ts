@@ -8,7 +8,7 @@ export default defineConfig(({ mode }) => ({
     port: 8080,
     proxy: {
       "/api": {
-        target: "https://virtuvoyage.onrender.com/",
+        target: "https://virtuvoyagee.onrender.com/",
         changeOrigin: true,
         secure: false,
       },
