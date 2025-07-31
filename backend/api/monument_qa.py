@@ -38,7 +38,7 @@ async def answer_query(image_bytes: bytes, user_question: str, monument_name: st
         raise RuntimeError("GOOGLE_GEMINI_API_KEY not set")
 
     try:
-        model = genai.GenerativeModel("gemini-1.5-flash-latest")
+        model = genai.GenerativeModel("gemini-2.0-flash-001")
 
         with tempfile.NamedTemporaryFile(delete=False, suffix=".png") as tmp:
             tmp.write(image_bytes)
